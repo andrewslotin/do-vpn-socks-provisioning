@@ -46,16 +46,17 @@ func TestVPNProvisioning(t *testing.T) {
 		log.Println(string(output))
 		return string(output), err
 	})
-	assert.Contains(t, output, "0.0% packet loss")
+	require.Contains(t, output, "0.0% packet loss")
 
 	sshKey := terraform.Output(t, opts, "ssh_key")
 	require.NotEmpty(t, sshKey)
 
-	ssh.CheckSshConnection(t, ssh.Host{
+	output = ssh.CheckSshCommand(t, ssh.Host{
 		Hostname:    dropletIP,
 		SshUserName: "root",
 		SshKeyPair: &ssh.KeyPair{
 			PrivateKey: sshKey,
 		},
-	})
+	}, "docker version")
+	assert.Contains(t, output, "Server: Docker Engine")
 }

@@ -36,4 +36,23 @@ resource "digitalocean_droplet" "vpn" {
   region = "${var.region}"
 
   ssh_keys = ["${digitalocean_ssh_key.vpn.fingerprint}"]
+
+  connection {
+    type = "ssh"
+    user = "root"
+    private_key = "${tls_private_key.vpn.private_key_pem}"
+    timeout = "2m"
+  }
+
+  provisioner "remote-exec" {
+    inline = <<-EOF
+      # install Docker CE according to https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04
+      apt update
+      apt -y install apt-transport-https ca-certificates curl software-properties-common
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+      add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+      apt update
+      apt install -y docker-ce
+    EOF
+  }
 }
