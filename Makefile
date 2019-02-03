@@ -9,4 +9,7 @@ install: .terraform
 stop: install
 	terraform destroy $(TFFLAGS)
 
-.PHONY: install run stop
+test:
+	cd ./tests; go test
+
+.PHONY: install run stop test
