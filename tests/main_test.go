@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gruntwork-io/terratest/modules/retry"
+	"github.com/gruntwork-io/terratest/modules/ssh"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -46,4 +47,15 @@ func TestVPNProvisioning(t *testing.T) {
 		return string(output), err
 	})
 	assert.Contains(t, output, "0.0% packet loss")
+
+	sshKey := terraform.Output(t, opts, "ssh_key")
+	require.NotEmpty(t, sshKey)
+
+	ssh.CheckSshConnection(t, ssh.Host{
+		Hostname:    dropletIP,
+		SshUserName: "root",
+		SshKeyPair: &ssh.KeyPair{
+			PrivateKey: sshKey,
+		},
+	})
 }
