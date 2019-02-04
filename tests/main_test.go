@@ -59,4 +59,5 @@ func TestVPNProvisioning(t *testing.T) {
 		},
 	}, "docker ps")
 	assert.Contains(t, output, "siomiz/softethervpn:alpine")
+	assert.Contains(t, output, "schors/tgdante2:latest")
 }
