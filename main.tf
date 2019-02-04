@@ -53,6 +53,9 @@ resource "digitalocean_droplet" "vpn" {
       add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
       apt update
       apt install -y docker-ce
+
+      # install l2tp VPN server
+      docker run -d --cap-add=NET_ADMIN -p 500:500/udp -p 4500:4500/udp -p 1701:1701/udp -p 1701:1701/tcp --restart=unless-stopped siomiz/softethervpn:alpine
     EOF
   }
 }

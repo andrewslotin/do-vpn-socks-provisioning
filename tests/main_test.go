@@ -57,6 +57,6 @@ func TestVPNProvisioning(t *testing.T) {
 		SshKeyPair: &ssh.KeyPair{
 			PrivateKey: sshKey,
 		},
-	}, "docker version")
-	assert.Contains(t, output, "Server: Docker Engine")
+	}, "docker ps")
+	assert.Contains(t, output, "siomiz/softethervpn:alpine")
 }
