@@ -60,4 +60,19 @@ func TestVPNProvisioning(t *testing.T) {
 	}, "docker ps")
 	assert.Contains(t, output, "siomiz/softethervpn:alpine")
 	assert.Contains(t, output, "schors/tgdante2:latest")
+
+	vpnUser := terraform.Output(t, opts, "vpn_user")
+	assert.NotEmpty(t, vpnUser)
+
+	vpnPassword := terraform.Output(t, opts, "vpn_password")
+	assert.NotEmpty(t, vpnPassword)
+
+	vpnPSK := terraform.Output(t, opts, "vpn_psk")
+	assert.NotEmpty(t, vpnPSK)
+
+	socksUser := terraform.Output(t, opts, "socks_user")
+	assert.NotEmpty(t, socksUser)
+
+	socksPassword := terraform.Output(t, opts, "socks_password")
+	assert.NotEmpty(t, socksPassword)
 }

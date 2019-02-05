@@ -10,6 +10,37 @@ variable "region" {
   default = "nyc2"
 }
 
+# VPN credentials
+
+resource "random_string" "vpn_user" {
+  length = 6
+  special = false
+}
+
+resource "random_string" "vpn_password" {
+  length = 8
+  special = false
+}
+
+resource "random_string" "vpn_psk" {
+  length = 8
+  special = false
+}
+
+# SOCKS5 credentials
+
+resource "random_string" "socks_user" {
+  length = 6
+  special = false
+}
+
+resource "random_string" "socks_password" {
+  length = 8
+  special = false
+}
+
+# Set up DigitalOcean instance running VPN and SOCKS5 proxy servers
+
 provider "digitalocean" {
   token = "${var.do_api_token}"
 }
@@ -55,10 +86,10 @@ resource "digitalocean_droplet" "vpn" {
       apt install -y docker-ce
 
       # install l2tp VPN server
-      docker run -d --cap-add=NET_ADMIN -p 500:500/udp -p 4500:4500/udp -p 1701:1701/udp -p 1701:1701/tcp --restart=unless-stopped siomiz/softethervpn:alpine
+      docker run -d --cap-add=NET_ADMIN -p 500:500/udp -p 4500:4500/udp -p 1701:1701/udp -p 1701:1701/tcp --restart=unless-stopped -e PSK=${random_string.vpn_psk.result} -e USERS=${random_string.vpn_user.result}:${random_string.vpn_password.result} siomiz/softethervpn:alpine
 
       # install socks5 proxy
-      docker run -d --restart=unless-stopped -p 1080:1080 -e PORT=1080 schors/tgdante2:latest
+      docker run -d --restart=unless-stopped -p 1080:1080 -e PORT=1080 -e USER=${random_string.socks_user.result} -e PASS=${random_string.socks_password.result} schors/tgdante2:latest
     EOF
   }
 }
